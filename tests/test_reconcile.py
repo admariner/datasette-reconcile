@@ -101,8 +101,9 @@ async def test_response_queries_get(db_path):
     async with httpx.AsyncClient(app=app) as client:
         queries = json.dumps({"q0": {"query": "fido"}})
         response = await client.get(
-            "http://localhost/test/dogs/-/reconcile?queries={}".format(queries)
+            f"http://localhost/test/dogs/-/reconcile?queries={queries}"
         )
+
         assert 200 == response.status_code
         data = response.json()
         assert "q0" in data.keys()
@@ -141,8 +142,9 @@ async def test_response_queries_no_results_get(db_path):
     async with httpx.AsyncClient(app=app) as client:
         queries = json.dumps({"q0": {"query": "abcdef"}})
         response = await client.get(
-            "http://localhost/test/dogs/-/reconcile?queries={}".format(queries)
+            f"http://localhost/test/dogs/-/reconcile?queries={queries}"
         )
+
         assert 200 == response.status_code
         data = response.json()
         assert "q0" in data.keys()

@@ -34,8 +34,7 @@ async def reconcile(request, datasette):
 
     # work out if we are looking for queries
     post_vars = await request.post_vars()
-    queries = post_vars.get("queries", request.args.get("queries"))
-    if queries:
+    if queries := post_vars.get("queries", request.args.get("queries")):
         queries = json.loads(queries)
         return Response.json(
             {

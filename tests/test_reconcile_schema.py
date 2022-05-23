@@ -17,7 +17,7 @@ async def test_schema_manifest(db_path):
         response = await client.get("http://localhost/test/dogs/-/reconcile")
         data = response.json()
         for schema_version, schema in schemas.items():
-            print("Schema version: {}".format(schema_version))
+            print(f"Schema version: {schema_version}")
             jsonschema.validate(
                 instance=data,
                 schema=schema,
@@ -37,7 +37,7 @@ async def test_response_queries_schema_post(db_path):
         assert 200 == response.status_code
         data = response.json()
         for schema_version, schema in schemas.items():
-            print("Schema version: {}".format(schema_version))
+            print(f"Schema version: {schema_version}")
             jsonschema.validate(
                 instance=data,
                 schema=schema,
@@ -52,12 +52,13 @@ async def test_response_queries_schema_get(db_path):
     async with httpx.AsyncClient(app=app) as client:
         queries = json.dumps({"q0": {"query": "fido"}})
         response = await client.get(
-            "http://localhost/test/dogs/-/reconcile?queries={}".format(queries)
+            f"http://localhost/test/dogs/-/reconcile?queries={queries}"
         )
+
         assert 200 == response.status_code
         data = response.json()
         for schema_version, schema in schemas.items():
-            print("Schema version: {}".format(schema_version))
+            print(f"Schema version: {schema_version}")
             jsonschema.validate(
                 instance=data,
                 schema=schema,
@@ -77,7 +78,7 @@ async def test_response_queries_no_results_schema_post(db_path):
         assert 200 == response.status_code
         data = response.json()
         for schema_version, schema in schemas.items():
-            print("Schema version: {}".format(schema_version))
+            print(f"Schema version: {schema_version}")
             jsonschema.validate(
                 instance=data,
                 schema=schema,
@@ -92,12 +93,13 @@ async def test_response_queries_no_results_schema_get(db_path):
     async with httpx.AsyncClient(app=app) as client:
         queries = json.dumps({"q0": {"query": "abcdef"}})
         response = await client.get(
-            "http://localhost/test/dogs/-/reconcile?queries={}".format(queries)
+            f"http://localhost/test/dogs/-/reconcile?queries={queries}"
         )
+
         assert 200 == response.status_code
         data = response.json()
         for schema_version, schema in schemas.items():
-            print("Schema version: {}".format(schema_version))
+            print(f"Schema version: {schema_version}")
             jsonschema.validate(
                 instance=data,
                 schema=schema,
