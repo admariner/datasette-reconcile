@@ -22,9 +22,8 @@ async def check_permissions(request, permissions, ds):
         else:
             assert (
                 False
-            ), "permission should be string or tuple of two items: {}".format(
-                repr(permission)
-            )
+            ), f"permission should be string or tuple of two items: {repr(permission)}"
+
         ok = await ds.permission_allowed(
             request.actor,
             action,
@@ -42,23 +41,23 @@ async def check_config(config, db, table):
     is_view = bool(await db.get_view_definition(table))
     table_exists = bool(await db.table_exists(table))
     if not is_view and not table_exists:
-        raise NotFound("Table not found: {}".format(table))
+        raise NotFound(f"Table not found: {table}")
 
     if not config:
         raise NotFound(
-            "datasette-reconcile not configured for table {} in database {}".format(
-                table, str(db)
-            )
+            f"datasette-reconcile not configured for table {table} in database {str(db)}"
         )
+
 
     pks = await db.primary_keys(table)
     if not pks:
         pks = ["rowid"]
 
-    if "id_field" not in config and len(pks) == 1:
-        config["id_field"] = pks[0]
-    elif "id_field" not in config:
-        raise ReconcileError("Could not determine an ID field to use")
+    if "id_field" not in config:
+        if len(pks) == 1:
+            config["id_field"] = pks[0]
+        else:
+            raise ReconcileError("Could not determine an ID field to use")
 
     if "name_field" not in config:
         raise ReconcileError("Name field must be defined to activate reconciliation")
@@ -80,9 +79,8 @@ async def check_config(config, db, table):
             if not isinstance(t.get("name"), str):
                 raise ReconcileError("type_default 'name' values should be strings")
 
-    if "view_url" in config:
-        if not "{{id}}" in config["view_url"]:
-            raise ReconcileError("View URL must contain {{id}}")
+    if "view_url" in config and "{{id}}" not in config["view_url"]:
+        raise ReconcileError("View URL must contain {{id}}")
 
     config["fts_table"] = await db.fts_table(table)
 
@@ -116,8 +114,6 @@ def get_view_url(ds, database, table):
     db = ds.databases[database]
     base_url = ds.config("base_url")
     if ds.config("hash_urls") and db.hash:
-        return "{}{}-{}/{}/{}".format(
-            base_url, database, db.hash[:HASH_LENGTH], table, id_str
-        )
+        return f"{base_url}{database}-{db.hash[:HASH_LENGTH]}/{table}/{id_str}"
     else:
-        return "{}{}/{}/{}".format(base_url, database, table, id_str)
+        return f"{base_url}{database}/{table}/{id_str}"

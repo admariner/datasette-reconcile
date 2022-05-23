@@ -50,8 +50,7 @@ def get_schema(filename):
 
 @pytest.fixture(scope="session")
 def ds(tmp_path_factory):
-    ds = Datasette([create_db(tmp_path_factory)], metadata=plugin_metadata())
-    return ds
+    return Datasette([create_db(tmp_path_factory)], metadata=plugin_metadata())
 
 
 @pytest.fixture(scope="session")
